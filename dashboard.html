@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبۆرد | مامۆستا ئیبراهیم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --accent: #6366f1; --dark-bg: #0f172a; --card-bg: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; margin: 0; padding-bottom: 40px; }
+        .hero-banner { width: 100%; height: 220px; background: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; border-radius: 0 0 40px 40px; display: flex; align-items: flex-end; padding: 30px; box-sizing: border-box; }
+        .hero-text h1 { margin: 0; font-size: 26px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .hero-text p { margin: 5px 0 0; color: #94a3b8; font-size: 14px; }
+        .teacher-info { margin: 25px 6%; padding: 20px; background: rgba(99, 102, 241, 0.1); border-right: 4px solid var(--accent); border-radius: 15px; }
+        .teacher-info h4 { margin: 0 0 5px; color: var(--accent); }
+        .teacher-info p { margin: 0; font-size: 13px; color: #cbd5e1; line-height: 1.6; }
+        
+        /* لێرە گریدی کارتەکان بەتاڵ دەکەین بۆ ئەوەی بە سکرێپت پڕ بێتەوە */
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 0 6%; margin-top: 10px; }
+        
+        .main-card { background: var(--card-bg); height: 140px; border-radius: 30px; display: flex; align-items: center; padding: 0 25px; text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; overflow: hidden; }
+        .main-card:active { transform: scale(0.97); }
+        .main-card i.bg-icon { position: absolute; left: -10px; bottom: -10px; font-size: 100px; opacity: 0.05; }
+        .icon-circle { width: 70px; height: 70px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-left: 20px; background: var(--accent); }
+        
+        .card-text h3 { margin: 0; font-size: 20px; }
+        .card-text span { font-size: 13px; color: #94a3b8; }
+        
+        .view-section { margin: 20px 6% 0; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .view-count { font-size: 18px; font-weight: bold; color: white; margin-top: 5px; }
+        .social-footer { margin-top: 40px; text-align: center; padding: 20px; }
+        .social-icons { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .social-icons a { width: 45px; height: 45px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; text-decoration: none; }
+        .logout-btn { display: block; margin: 30px auto; color: #f87171; background: none; border: none; font-size: 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="hero-banner">
+        <div class="hero-text">
+            <h1 id="uName">بەخێربێی</h1>
+            <p>خوێندنگای مامۆستا ئیبراهیم خەلیل</p>
+        </div>
+    </div>
+
+    <div class="teacher-info">
+        <h4><i class="fas fa-chalkboard-teacher"></i> دەربارەی مامۆستا</h4>
+        <p>ئەم پلاتفۆڕمە لەژێر سەرپەرشتی مامۆستا <b>ئیبراهیم خەلیل</b> ئامادەکراوە بۆ فێربوونی وانەکانی زمانی کوردی پۆلی ١٢ بە شێوازێکی مۆدێرن و ئاسان.</p>
+    </div>
+
+    <div class="grid" id="categoryGrid"></div>
+
+    <div class="view-section">
+        <i class="fas fa-eye" style="color: var(--accent); font-size: 18px;"></i>
+        <div id="viewCount" class="view-count">...</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 3px;">کۆی گشتی بینینەکان</div>
+    </div>
+
+    <div class="social-footer">
+        <h5>پەیوەندیمان پێوە بکە</h5>
+        <div class="social-icons">
+            <a href="#" style="color: #1877F2;"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" style="color: #FFFC00;"><i class="fab fa-snapchat-ghost"></i></a>
+            <a href="#" style="color: #ff0050;"><i class="fab fa-tiktok"></i></a>
+            <a href="https://wa.me/9647508615141" style="color: #25D366;"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <button class="logout-btn" onclick="firebase.auth().signOut()">چوونەدەرەوە لە هەژمار</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOB4LSLU3I_SoZw26ljhNLPOcQ-lFSxCs",
+            authDomain: "kurdishonline-24f66.firebaseapp.com",
+            databaseURL: "https://kurdishonline-24f66-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "kurdishonline-24f66",
+            appId: "1:224982073796:web:4c4832aed1e2823d186491"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('uName').innerText = "سڵاو، " + (user.displayName || "قوتابی");
+                loadCategories();
+                updateViews();
+            } else { location.href = "index.html"; }
+        });
+
+        // لۆدکردنی بەشەکان لە داتابەیسەوە
+        function loadCategories() {
+            const grid = document.getElementById('categoryGrid');
+            firebase.database().ref('categories').on('value', snap => {
+                grid.innerHTML = "";
+                snap.forEach(child => {
+                    const cat = child.val();
+                    const catId = child.key;
+                    grid.innerHTML += `
+                        <a href="lessons.html?cat=${catId}" class="main-card">
+                            <i class="fas fa-book-open bg-icon"></i>
+                            <div class="icon-circle"><i class="fas fa-graduation-cap"></i></div>
+                            <div class="card-text">
+                                <h3>${cat.name}</h3>
+                                <span>بینینی وانەکانی ئەم بەشە</span>
+                            </div>
+                        </a>
+                    `;
+                });
+            });
+        }
+
+        function updateViews() {
+            const viewRef = firebase.database().ref('dashboard_views');
+            viewRef.transaction(c => (c || 0) + 1, (err, comm, snap) => {
+                if (comm) document.getElementById('viewCount').innerText = snap.val().toLocaleString();
+            });
+        }
+    </script>
+</body>
+</html>

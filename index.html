@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چوونەژوورەوە | مامۆستا ئیبراهیم خەلیل</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #6366f1; --dark-bg: #0f172a; --card-bg: #1e293b; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--dark-bg); 
+            color: white; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 35px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .logo-box {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 22px;
+            margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center; font-size: 35px;
+            overflow: hidden;
+        }
+
+        input {
+            width: 100%; padding: 16px; margin: 10px 0; border-radius: 15px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); 
+            color: white; outline: none; box-sizing: border-box; text-align: right;
+            font-family: inherit;
+        }
+
+        .btn-login {
+            width: 100%; padding: 16px; border-radius: 15px; border: none; 
+            background: var(--primary); color: white; font-weight: bold; 
+            cursor: pointer; margin-top: 10px; font-size: 16px; transition: 0.3s;
+        }
+
+        .btn-login:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .notes-area { margin-top: 30px; text-align: right; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px; }
+        .note-item { font-size: 13px; color: #94a3b8; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
+        .note-item i { color: var(--primary); margin-top: 3px; }
+        
+        .social-links { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+        .social-icon { width: 45px; height: 45px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 20px; transition: 0.3s; }
+        .social-icon:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-box">
+            <i class="fas fa-book-reader"></i>
+        </div>
+        
+        <h2 style="margin:0 0 5px;">بەخێربێیتەوە</h2>
+        <p style="color:#94a3b8; font-size: 14px; margin-bottom: 25px;">پلاتفۆڕمی فێربوونی مامۆستا ئیبراهیم</p>
+
+        <input type="email" id="email" placeholder="ئیمێڵەکەت بنووسە">
+        <input type="password" id="pass" placeholder="پاسووردەکەت بنووسە">
+        <button class="btn-login" onclick="login()">چوونەژوورەوە</button>
+
+        <div class="notes-area">
+            <div class="note-item"><i class="fas fa-check-circle"></i><span>وانەکانی کوردی پۆلی ١٢ بە شێوازی تێست.</span></div>
+            <div class="note-item"><i class="fas fa-info-circle"></i><span>بۆ دەستکەوتنی ئەکاونت پەیوەندیمان پێوە بکە.</span></div>
+            <div class="note-item"><i class="fas fa-user-shield"></i><span>ئەم پلاتفۆڕمە پارێزراوە و تەنها بۆ بەشداربووانە.</span></div>
+        </div>
+
+        <div class="social-links">
+            <a href="https://wa.me/9647508615141" class="social-icon" style="background:#25d366;"><i class="fab fa-whatsapp"></i></a>
+            <a href="viber://chat?number=%2B9647508615141" class="social-icon" style="background:#7360f2;"><i class="fab fa-viber"></i></a>
+            <a href="#" class="social-icon" style="background:#1877f2;"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOB4LSLU3I_SoZw26ljhNLPOcQ-lFSxCs",
+            authDomain: "kurdishonline-24f66.firebaseapp.com",
+            databaseURL: "https://kurdishonline-24f66-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "kurdishonline-24f66",
+            appId: "1:224982073796:web:4c4832aed1e2823d186491"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        function login() {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            // ئیمێڵی خۆت لێرە بنووسە بۆ ئەوەی سیستمەکە بتناسێتەوە وەک ئادمین
+            const adminEmail = "kurdishonline71@gmail.com"; 
+
+            if(!e || !p) { alert("تکایە هەموو خانەکان پڕبکەرەوە"); return; }
+
+            firebase.auth().signInWithEmailAndPassword(e, p)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    if (user.email === adminEmail) {
+                        location.href = "admin.html";
+                    } else {
+                        // پاشەکەوتکردنی کاتی چوونەژوورەوەی قوتابی
+                        firebase.database().ref('users/' + user.uid).update({
+                            lastLogin: new Date().toLocaleString()
+                        });
+                        location.href = "dashboard.html";
+                    }
+                })
+                .catch(err => {
+                    alert("ئیمێڵ یان پاسووردەکە هەڵەیە یان ئەکاونتت نییە!");
+                });
+        }
+    </script>
+</body>
+</html>

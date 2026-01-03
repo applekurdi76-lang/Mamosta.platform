@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وانەکان | م. ئیبراهیم خەلیل</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #6366f1; --dark-bg: #0f172a; --card-bg: #1e293b; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--dark-bg); color: white; margin: 0; padding-bottom: 30px; -webkit-user-select: none; }
+        .player-section { position: sticky; top: 0; z-index: 1000; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        header { padding: 15px 20px; display: flex; align-items: center; gap: 15px; background: var(--card-bg); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .back-btn { color: white; font-size: 18px; text-decoration: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 12px; }
+        .video-container { width: 100%; aspect-ratio: 16/9; background: #000; }
+        .main-content { padding: 25px 6%; }
+        .info-box { margin-bottom: 30px; border-right: 5px solid var(--primary); padding-right: 15px; }
+        .info-box h2 { margin: 0; font-size: 24px; color: #f1f5f9; }
+        .info-box p { margin: 5px 0 0; color: #94a3b8; font-size: 14px; }
+        .lesson-list { display: flex; flex-direction: column; gap: 15px; }
+        .lesson-card { background: var(--card-bg); padding: 18px; border-radius: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.03); }
+        .lesson-card.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.15); }
+        .play-status { width: 45px; height: 45px; background: rgba(255,255,255,0.05); color: var(--primary); border-radius: 15px; display: flex; align-items: center; justify-content: center; }
+        .active .play-status { background: var(--primary); color: white; }
+        .price-banner { margin-top: 40px; padding: 20px; background: rgba(74, 222, 128, 0.05); border-radius: 20px; border: 1px dashed #4ade80; text-align: center; color: #4ade80; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div class="player-section">
+        <header>
+            <a href="dashboard.html" class="back-btn"><i class="fas fa-chevron-right"></i></a>
+            <span id="navTitle" style="font-weight: bold;">وانەکان باردەکرێن...</span>
+        </header>
+        <div class="video-container">
+            <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="info-box">
+            <h2 id="catName">ناو پۆلێنکردن</h2>
+            <p id="lCount">٠ وانە</p>
+        </div>
+        <div id="lessonList" class="lesson-list"></div>
+        <div class="price-banner"><i class="fas fa-tags"></i> نرخی بەشداریکردن لەم کۆرسە تەنها <b>50,000</b> دینارە.</div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOB4LSLU3I_SoZw26ljhNLPOcQ-lFSxCs",
+            authDomain: "kurdishonline-24f66.firebaseapp.com",
+            databaseURL: "https://kurdishonline-24f66-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "kurdishonline-24f66",
+            appId: "1:224982073796:web:4c4832aed1e2823d186491"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get('cat') || 'grammar';
+        const db = firebase.database();
+        const player = new Plyr('#player', { youtube: { modestbranding: 1, rel: 0 } });
+
+        function initLessons() {
+            const titles = { grammar: "ڕێزمانی کوردی", literature: "ئەدەبیاتی کوردی", rwanbeje: "ڕەوانبێژی" };
+            document.getElementById('navTitle').innerText = titles[category];
+            document.getElementById('catName').innerText = titles[category];
+
+            db.ref('courses/' + category).on('value', (snapshot) => {
+                const container = document.getElementById('lessonList');
+                container.innerHTML = "";
+                let index = 0;
+                snapshot.forEach((child) => {
+                    const lesson = child.val();
+                    const card = document.createElement('div');
+                    card.className = `lesson-card ${index === 0 ? 'active' : ''}`;
+                    if(index === 0) player.source = { type: 'video', sources: [{ src: lesson.id, provider: 'youtube' }] };
+                    
+                    card.onclick = () => {
+                        player.source = { type: 'video', sources: [{ src: lesson.id, provider: 'youtube' }] };
+                        player.play();
+                        document.querySelectorAll('.lesson-card').forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                    };
+                    card.innerHTML = `<div class="play-status"><i class="fas fa-play"></i></div><div class="l-info"><h4>${lesson.title}</h4><span>کاتی وانە: ${lesson.time}</span></div>`;
+                    container.appendChild(card);
+                    index++;
+                });
+                document.getElementById('lCount').innerText = `${index} وانە هەن`;
+            });
+        }
+        window.onload = initLessons;
+    </script>
+</body>
+</html>

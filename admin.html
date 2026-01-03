@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بەڕێوەبردنی گشتی | م. ئیبراهیم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #6366f1; --bg: #0f172a; --card: #1e293b; --danger: #ef4444; --success: #10b981; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .section-card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        h3 { margin-top: 0; color: var(--primary); display: flex; align-items: center; gap: 10px; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        input, select, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; box-sizing: border-box; font-size: 14px; }
+        button { background: var(--primary); cursor: pointer; font-weight: bold; border: none; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-red { background: var(--danger); width: auto; padding: 6px 15px; font-size: 12px; border-radius: 8px; color: white; cursor: pointer; border: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: right; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+        th { color: #94a3b8; font-weight: 500; }
+        .scroll-box { max-height: 350px; overflow-y: auto; }
+        .badge { background: rgba(99, 102, 241, 0.2); color: var(--primary); padding: 2px 8px; border-radius: 6px; font-size: 11px; }
+        .search-input { border: 1px solid var(--primary) !important; background: rgba(99, 102, 241, 0.1) !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div>
+            <h2 style="margin:0;"><i class="fas fa-shield-alt"></i> پانێڵی ئەدمین</h2>
+            <small style="color: #94a3b8;">بەڕێوەبردنی گشتی سیستەم</small>
+        </div>
+        <button onclick="firebase.auth().signOut()" style="width: auto; background: #334155;">چوونەدەرەوە</button>
+    </div>
+
+    <div class="grid">
+        <div class="section-card">
+            <h3><i class="fas fa-user-plus"></i> قوتابی نوێ</h3>
+            <input type="text" id="stdName" placeholder="ناوی تەواو">
+            <input type="email" id="stdEmail" placeholder="ئیمێڵ">
+            <input type="password" id="stdPass" placeholder="پاسوورد">
+            <button onclick="registerStudent()" style="background: var(--success);">تۆمارکردن</button>
+            
+            <h3 style="margin-top:30px; border:none;"><i class="fas fa-users"></i> لیستی قوتابیان</h3>
+            <input type="text" id="userSearch" onkeyup="searchUsers()" class="search-input" placeholder="گەڕان بەدوای ناوی قوتابی...">
+            <div class="scroll-box">
+                <table>
+                    <thead><tr><th>ناو</th><th>کردار</th></tr></thead>
+                    <tbody id="userList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3><i class="fas fa-folder-plus"></i> دروستکردنی بەش</h3>
+            <input type="text" id="newCatName" placeholder="ناوی بەش (نموونە: ڕێزمان)">
+            <input type="text" id="newCatId" placeholder="کۆدی بەش (نموونە: grammar)">
+            <button onclick="addNewCategory()">زیادکردن</button>
+
+            <h3 style="margin-top:30px; border:none;"><i class="fas fa-list"></i> بەشەکان</h3>
+            <div class="scroll-box">
+                <table>
+                    <thead><tr><th>ناو</th><th>کردار</th></tr></thead>
+                    <tbody id="catTableList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3><i class="fas fa-video"></i> بڵاوکردنەوەی وانە</h3>
+            <select id="catSelect"><option>باردەکرێت...</option></select>
+            <input type="text" id="vTitle" placeholder="ناونیشانی وانە">
+            <input type="text" id="vId" placeholder="کۆدی ڤیدیۆ (Video ID)">
+            <input type="text" id="vTime" placeholder="کاتی وانە">
+            <button onclick="addLesson()">بڵاوکردنەوە</button>
+        </div>
+    </div>
+
+    <div class="section-card" style="margin-top: 20px;">
+        <h3><i class="fas fa-film"></i> بەڕێوەبردنی وانە بڵاوکراوەکان</h3>
+        <div class="scroll-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ناونیشانی وانە</th>
+                        <th>بەش</th>
+                        <th>کردار</th>
+                    </tr>
+                </thead>
+                <tbody id="allLessonsList"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+    // کۆنفیگۆری فایەربەیس
+    const firebaseConfig = {
+        apiKey: "AIzaSyAOB4LSLU3I_SoZw26ljhNLPOcQ-lFSxCs",
+        authDomain: "kurdishonline-24f66.firebaseapp.com",
+        databaseURL: "https://kurdishonline-24f66-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "kurdishonline-24f66",
+        appId: "1:224982073796:web:4c4832aed1e2823d186491"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
+    // ئیمێڵی ئادمین (ئەمە بگۆڕە بۆ ئیمێڵەکەی خۆت)
+    const adminEmail ="kurdishonline71@gmail.com"; 
+
+    firebase.auth().onAuthStateChanged(user => {
+        if (!user || user.email !== adminEmail) {
+            window.location.href = "index.html";
+        } else {
+            loadAllData();
+        }
+    });
+
+    function loadAllData() {
+        // لۆدکردنی بەشەکان
+        db.ref('categories').on('value', snap => {
+            const select = document.getElementById('catSelect');
+            const table = document.getElementById('catTableList');
+            select.innerHTML = ""; table.innerHTML = "";
+            snap.forEach(c => {
+                select.innerHTML += `<option value="${c.key}">${c.val().name}</option>`;
+                table.innerHTML += `<tr><td>${c.val().name}</td><td><button class="btn-red" onclick="deleteItem('categories/${c.key}')">سڕینەوە</button></td></tr>`;
+            });
+        });
+
+        // لۆدکردنی قوتابیان
+        db.ref('users').on('value', snap => {
+            const list = document.getElementById('userList');
+            list.innerHTML = "";
+            snap.forEach(u => {
+                if(u.val().email !== adminEmail) {
+                    list.innerHTML += `<tr><td>${u.val().name}</td><td><button class="btn-red" onclick="deleteItem('users/${u.key}')">سڕینەوە</button></td></tr>`;
+                }
+            });
+        });
+
+        // لۆدکردنی هەموو وانەکان
+        db.ref('courses').on('value', snap => {
+            const lessonList = document.getElementById('allLessonsList');
+            lessonList.innerHTML = "";
+            snap.forEach(categorySnap => {
+                const catId = categorySnap.key;
+                categorySnap.forEach(lessonSnap => {
+                    const lesson = lessonSnap.val();
+                    lessonList.innerHTML += `
+                        <tr>
+                            <td>${lesson.title}</td>
+                            <td><span class="badge">${catId}</span></td>
+                            <td><button class="btn-red" onclick="deleteItem('courses/${catId}/${lessonSnap.key}')">سڕینەوە</button></td>
+                        </tr>`;
+                });
+            });
+        });
+    }
+
+    // فەنکشنی گەڕان بەدوای قوتابی
+    function searchUsers() {
+        let input = document.getElementById("userSearch");
+        let filter = input.value.toUpperCase();
+        let table = document.getElementById("userList");
+        let tr = table.getElementsByTagName("tr");
+        for (let i = 0; i < tr.length; i++) {
+            let td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                let txtValue = td.textContent || td.innerText;
+                tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+    }
+
+    function registerStudent() {
+        const name = document.getElementById('stdName').value, email = document.getElementById('stdEmail').value, pass = document.getElementById('stdPass').value;
+        if(!name || !email || !pass) return alert("تکایە هەموو خانەکان پڕبکەرەوە");
+        firebase.auth().createUserWithEmailAndPassword(email, pass).then(res => {
+            db.ref('users/' + res.user.uid).set({ name, email });
+            alert("قوتابی زیادکرا");
+        }).catch(e => alert("هەڵە: " + e.message));
+    }
+
+    function addNewCategory() {
+        const name = document.getElementById('newCatName').value, id = document.getElementById('newCatId').value;
+        if(name && id) db.ref('categories/' + id).set({ name }).then(() => alert("بەشەکە زیادکرا"));
+    }
+
+    function addLesson() {
+        const cat = document.getElementById('catSelect').value, title = document.getElementById('vTitle').value, id = document.getElementById('vId').value, time = document.getElementById('vTime').value;
+        if(title && id) db.ref('courses/' + cat).push({ title, id, time }).then(() => {
+            alert("وانەکە بڵاوکرایەوە");
+            document.getElementById('vTitle').value = ""; document.getElementById('vId').value = "";
+        });
+    }
+
+    function deleteItem(path) {
+        if(confirm("ئایا دڵنیایت لە سڕینەوە؟")) {
+            db.ref(path).remove().then(() => alert("سڕایەوە"));
+        }
+    }
+</script>
+</body>
+</html>
